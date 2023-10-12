@@ -49,7 +49,6 @@ def combine_contigs(fasta_file):
 
 if __name__ == '__main__':
     file_path = sys.argv[1]
-    # file_path = "C:\\Users\\Ethan Mach\\Desktop\\project\\hmmc_refgenomes\\470\\470.fna"
 
     # error handling for if file path exists
     if not os.path.exists(file_path):
