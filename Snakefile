@@ -64,6 +64,7 @@ rule filter_sam_reads:
     run:
         output_directory = f"{hmmc_dir}{wildcards.taxon_id}/alignment_files"
 
+        # run samtools for filtered SAM entries and reorganize files
         shell(f"mkdir -p {output_directory}")
         shell(f"samtools view -h -F 4 {input} > {output}")
         shell(f"mv {hmmc_dir}{wildcards.taxon_id}/*.sam {output_directory}")
