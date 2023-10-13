@@ -15,7 +15,7 @@ rule bowtie_alignment:
     input:
         fastq = proj_dir + "samples/hmp_mock_454_even/SRR072233.fastq",
         index = hmmc_dir + "{taxon_id}/{taxon_id}_index.1.bt2"
-    output: hmmc_dir + "{taxon_id}/{taxon_id}.sam"
+    output: hmmc_dir + "{taxon_id}/{taxon_id}_bowtie2.sam"
     run:
         index_dir = f"{hmmc_dir}/{wildcards.taxon_id}/bowtie2_indices"
 
@@ -60,6 +60,6 @@ rule filter_sam_reads:
 ### Misc. rules ###
 # rule for linking ref genomes together
 rule combine_fragmented_genomes:
-    input: hmmc_dir + "{taxon_id}{taxon_id}.fna"
-    output: hmmc_dir + "{taxon_id}{taxon_id}_combined.fna"
+    input: hmmc_dir + "{taxon_id}/{taxon_id}.fna"
+    output: hmmc_dir + "{taxon_id}/{taxon_id}_combined.fna"
     shell: proj_dir + "scripts/contig_combiner.py {input}"
