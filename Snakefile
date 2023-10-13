@@ -20,7 +20,8 @@ rule bowtie_alignment:
         index = hmmc_dir + "/{taxon_id}/{taxon_id}_index.1.bt2"
     output:
         hmmc_dir + "/{taxon_id}/{taxon_id}_bowtie2.sam"
-    shell: f"{bowtie2_dir}/bowtie2 -x {hmmc_dir}/{wildcards.taxon_id}/{wildcards.taxon_id}_index -U {input.fastq} -S {output}"
+    run:
+        shell(f"{bowtie2_dir}/bowtie2 -x {hmmc_dir}/{wildcards.taxon_id}/{wildcards.taxon_id}_index -U {input.fastq} -S {output}")
 
 
 ### workflow for fr-hit SAM output ###
@@ -55,7 +56,8 @@ rule filter_sam_reads:
         hmmc_dir + "/{taxon_id}/{taxon_id}_frhit_header.sam"
     output:
         hmmc_dir + "/{taxon_id}/{taxon_id}_frhit_final.sam"
-    shell: f"samtools view -h -F 4 {input} > {output}"
+    run:
+        shell(f"samtools view -h -F 4 {input} > {output}")
 
 
 ### Misc. rules ###
