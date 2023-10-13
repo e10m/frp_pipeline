@@ -20,13 +20,7 @@ rule bowtie_alignment:
         index = hmmc_dir + "/{taxon_id}/{taxon_id}_index.1.bt2"
     output:
         hmmc_dir + "/{taxon_id}/{taxon_id}_bowtie2.sam"
-    run:
-        index_dir = f"{hmmc_dir}/{wildcards.taxon_id}/bowtie2_indices"
-
-        # align reads and move index files
-        shell(f"{bowtie2_dir}/bowtie2 -x {hmmc_dir}/{wildcards.taxon_id}/{wildcards.taxon_id}_index -U {input.fastq} -S {output}")
-        shell(f"mkdir -p {index_dir}")
-        shell(f"mv {hmmc_dir}/{wildcards.taxon_id}/{wildcards.taxon_id}_index* {index_dir}")
+    shell: f"{bowtie2_dir}/bowtie2 -x {hmmc_dir}/{wildcards.taxon_id}/{wildcards.taxon_id}_index -U {input.fastq} -S {output}"
 
 
 ### workflow for fr-hit SAM output ###
@@ -61,14 +55,7 @@ rule filter_sam_reads:
         hmmc_dir + "/{taxon_id}/{taxon_id}_frhit_header.sam"
     output:
         hmmc_dir + "/{taxon_id}/{taxon_id}_frhit_final.sam"
-    run:
-        output_directory = f"{hmmc_dir}/{wildcards.taxon_id}/alignment_files"
-
-        # run samtools for filtered SAM entries and reorganize files
-        shell(f"mkdir -p {output_directory}")
-        shell(f"samtools view -h -F 4 {input} > {output}")
-        shell(f"mv {hmmc_dir}/{wildcards.taxon_id}/*.sam {output_directory}")
-        shell(f"mv {hmmc_dir}/{wildcards.taxon_id}/*.psl {output_directory}")
+    shell: f"samtools view -h -F 4 {input} > {output}"
 
 
 ### Misc. rules ###
