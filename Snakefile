@@ -1,8 +1,8 @@
 # initialize directory variables
-proj_dir = "/home/ethanmach1998/project/"
-home_dir = "/home/ethanmach1998/"
-bowtie2_dir = "/home/ethanmach1998/anaconda3/envs/bowtie2_env/bin/"
-hmmc_dir = proj_dir + "hmmc_refgenomes"
+proj_dir = "/home/ethanmach1998/project"
+home_dir = "/home/ethanmach1998"
+bowtie2_dir = "/home/ethanmach1998/anaconda3/envs/bowtie2_env/bin"
+hmmc_dir = proj_dir + "/hmmc_refgenomes"
 
 
 ### workflow for bowtie2 SAM output ###
@@ -12,11 +12,11 @@ rule build_bowtie_indices:
     input:
         hmmc_dir + "/{taxon_id}/{taxon_id}_combined.fna"
     shell:
-        bowtie2_dir + "bowtie2-build {input} " + hmmc_dir + "/{wildcards.taxon_id}/{wildcards.taxon_id}_index"
+        bowtie2_dir + "/bowtie2-build {input} " + hmmc_dir + "/{wildcards.taxon_id}/{wildcards.taxon_id}_index"
 
 rule bowtie_alignment:
     input:
-        fastq = proj_dir + "samples/hmp_mock_454_even/SRR072233.fastq",
+        fastq = proj_dir + "/samples/hmp_mock_454_even/SRR072233.fastq",
         index = hmmc_dir + "/{taxon_id}/{taxon_id}_index.1.bt2"
     output:
         hmmc_dir + "/{taxon_id}/{taxon_id}_bowtie2.sam"
@@ -24,7 +24,7 @@ rule bowtie_alignment:
         index_dir = f"{hmmc_dir}/{wildcards.taxon_id}/bowtie2_indices"
 
         # align reads and move index files
-        shell(f"{bowtie2_dir}bowtie2 -x {hmmc_dir}/{wildcards.taxon_id}/{wildcards.taxon_id}_index -U {input.fastq} -S {output}")
+        shell(f"{bowtie2_dir}/bowtie2 -x {hmmc_dir}/{wildcards.taxon_id}/{wildcards.taxon_id}_index -U {input.fastq} -S {output}")
         shell(f"mkdir -p {index_dir}")
         shell(f"mv {hmmc_dir}/{wildcards.taxon_id}/{wildcards.taxon_id}_index* {index_dir}")
 
@@ -32,7 +32,7 @@ rule bowtie_alignment:
 ### workflow for fr-hit SAM output ###
 rule make_psl:
     input:
-        reads = proj_dir + "samples/hmp_mock_454_even/SRR072233.fasta",
+        reads = proj_dir + "/samples/hmp_mock_454_even/SRR072233.fasta",
         combined_refgenome = hmmc_dir + "/{taxon_id}/{taxon_id}_combined.fna"
     output:
         hmmc_dir + "/{taxon_id}/{taxon_id}_frhit.psl"
@@ -76,4 +76,4 @@ rule filter_sam_reads:
 rule combine_fragmented_genomes:
     input: hmmc_dir + "/{taxon_id}/{taxon_id}.fna"
     output: hmmc_dir + "/{taxon_id}/{taxon_id}_combined.fna"
-    shell: proj_dir + "scripts/contig_combiner.py {input}"
+    shell: proj_dir + "/scripts/contig_combiner.py {input}"
