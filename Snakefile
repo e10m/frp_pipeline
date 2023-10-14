@@ -44,7 +44,8 @@ rule build_bwa_indices:
 rule bwa_alignment:
     input:
         ref_genome = hmmc_dir + "/{taxon_id}/{taxon_id}_combined.fna",
-        reads = proj_dir + "/samples/hmp_mock_454_even/SRR072233.fastq"
+        reads = proj_dir + "/samples/hmp_mock_454_even/SRR072233.fastq",
+        index = hmmc_dir + "/{taxon_id}/{taxon_id}_combined.fna.bwt"
     output:
         hmmc_dir + "/{taxon_id}/{taxon_id}_bwa.sam"
     shell:
