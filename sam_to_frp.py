@@ -79,9 +79,10 @@ def generate_frp(data, file):
     positions = data[0]
     percent_identities = data[1]
     ref_genome = data[2]
-    file = re.search(r'(\d+)_([a-z]+\d*)', file)
-    taxon_id = file.group(1)
-    alignment_method = file.group(2)
+    file = re.search(r'(/\w+/\w+/\w+/\w+)/(\d+)/\d+_([a-z]+\d*)', file)
+    taxon_id = file.group(2)
+    alignment_method = file.group(3)
+    hmmc_dir = file.group(1)
 
     print("The SAM data has been loaded in")
 
@@ -97,7 +98,7 @@ def generate_frp(data, file):
     print("The chart has been labeled")
 
     # write/output plot as .png image
-    plt.savefig(f'{taxon_id}_{alignment_method}_frp.png', format='png', dpi=300)
+    plt.savefig(f'{hmmc_dir}/{taxon_id}/{taxon_id}_{alignment_method}_frp.png', format='png', dpi=300)
     print("The plot image file has been created")
 
 
