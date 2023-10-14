@@ -20,49 +20,60 @@ rule bowtie_alignment:
         index = hmmc_dir + "/{taxon_id}/{taxon_id}_index.1.bt2"
     output:
         hmmc_dir + "/{taxon_id}/{taxon_id}_bowtie2.sam"
-    run:
-        shell(f"{bowtie2_dir}/bowtie2 -x {hmmc_dir}/{wildcards.taxon_id}/{wildcards.taxon_id}_index -U {input.fastq} -S {output}")
-
-
-### workflow for fr-hit SAM output ###
-rule make_psl:
-    input:
-        reads = proj_dir + "/samples/hmp_mock_454_even/SRR072233.fasta",
-        combined_refgenome = hmmc_dir + "/{taxon_id}/{taxon_id}_combined.fna"
-    output:
-        hmmc_dir + "/{taxon_id}/{taxon_id}_frhit.psl"
     shell:
-        "fr-hit -a {input.reads} -d {input.combined_refgenome} -c 80 -f 1 -o {output}"
+        bowtie2_dir + "/bowtie2 -x " + hmmc_dir + "/{wildcards.taxon_id}/{wildcards.taxon_id}_index -U {input.fastq} -S {output}"
 
-rule convert_psl2sam:
+rule filter_bt2_sam:
     input:
-        hmmc_dir + "/{taxon_id}/{taxon_id}_frhit.psl"
+        hmmc_dir + "/{taxon_id}/{taxon_id}_bowtie2.sam"
     output:
-        hmmc_dir + "/{taxon_id}/{taxon_id}_frhit.sam"
+        hmmc_dir + "/{taxon_id}/{taxon_id}_bowtie2_final.sam"
     shell:
-        "psl2sam.pl {input} > {output}"
+        "samtools view -h -F 4 {input} > {output}"
 
-rule add_headerPlusMD:
+
+### workflow for BWA SAM output ###
+rule build_bwa_indices:
     input:
-        combined_refgenome = hmmc_dir + "/{taxon_id}/{taxon_id}_combined.fna",
-        sam_file = hmmc_dir + "/{taxon_id}/{taxon_id}_frhit.sam"
+        hmmc_dir + "/{taxon_id}/{taxon_id}_combined.fna"
     output:
-        hmmc_dir + "/{taxon_id}/{taxon_id}_frhit_header.sam"
+        hmmc_dir + "/{taxon_id}/{taxon_id}_combined.fna.bwt"
     shell:
-        "samtools view -hT {input.combined_refgenome} {input.sam_file} > {output}"
+        "bwa index {input}"
 
-rule filter_sam_reads:
+rule bwa_alignment:
     input:
-        hmmc_dir + "/{taxon_id}/{taxon_id}_frhit_header.sam"
+        ref_genome = hmmc_dir + "/{taxon_id}/{taxon_id}_combined.fna",
+        reads = proj_dir + "/samples/hmp_mock_454_even/SRR072233.fastq"
     output:
-        hmmc_dir + "/{taxon_id}/{taxon_id}_frhit_final.sam"
-    run:
-        shell(f"samtools view -h -F 4 {input} > {output}")
+        hmmc_dir + "/{taxon_id}/{taxon_id}_bwa.sam"
+    shell:
+        "bwa mem {input.ref_genome} {input.reads} > {output}"
+
+rule filter_bwa_sam_reads:
+    input:
+        hmmc_dir + "/{taxon_id}/{taxon_id}_bwa.sam"
+    output:
+        hmmc_dir + "/{taxon_id}/{taxon_id}_bwa_final.sam"
+    shell:
+        "samtools view -h -F 4 {input} > {output}"
 
 
-### Misc. rules ###
-# rule for linking ref genomes together
+### Reference Genome Manipulation Rules ###
 rule combine_fragmented_genomes:
     input: hmmc_dir + "/{taxon_id}/{taxon_id}.fna"
     output: hmmc_dir + "/{taxon_id}/{taxon_id}_combined.fna"
     shell: proj_dir + "/scripts/contig_combiner.py {input}"
+
+
+### Plotting Rule ###
+rule plot_sam_data:
+    input:
+        bt_sam = hmmc_dir + "/{taxon_id}/{taxon_id}_bowtie2_final.sam",
+        bwa_sam = hmmc_dir + "/{taxon_id}/{taxon_id}_bwa_final.sam"
+    output:
+        bt_frp = hmmc_dir + "/{taxon_id}/{taxon_id}_bowtie2_frp.png",
+        bwa_frp = hmmc_dir + "/{taxon_id}/{taxon_id}_bwa_frp.png"
+    run:
+        shell(proj_dir + "/scripts/sam_to_frp.py {input.bt_sam}")
+        shell(proj_dir + "/scripts/sam_to_frp.py {input.bwa_sam}")
