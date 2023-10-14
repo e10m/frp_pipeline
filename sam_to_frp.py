@@ -4,6 +4,7 @@ import os
 import sys
 import re
 import matplotlib.pyplot as plt
+import statistics
 
 
 def parse_sam(sam_file):
@@ -36,7 +37,6 @@ def parse_sam(sam_file):
             cigar_line = re.search(r'\*|([0-9]+[MIDNSHPX=])+', line).group(0)
             match_list = re.findall(r'(\d+)M', cigar_line)
 
-            #
             for match in match_list:
                 match = int(match)
                 total_cigar_matches += match
@@ -76,10 +76,14 @@ def generate_frp(data, file):
     :param file: file path name (str)
     :return: Fragment Recruitment Plot image (.png)
     """
+    # store data
     positions = data[0]
     percent_identities = data[1]
     ref_genome = data[2]
+
+    # parse file name
     file = re.search(r'(/\w+/\w+/\w+/\w+)/(\d+)/\d+_([a-z]+\d*)', file)
+
     taxon_id = file.group(2)
     alignment_method = file.group(3)
     hmmc_dir = file.group(1)
@@ -94,8 +98,9 @@ def generate_frp(data, file):
     plt.title(f'FRP Against Reference Genome {ref_genome} Using {alignment_method}', fontsize=10)
     plt.xlabel('Position on Reference Genome')
     plt.ylabel('Percent Identity')
-    plt.ylim(80,100)
+    plt.ylim(80, 100)
     print("The chart has been labeled")
+
 
     # write/output plot as .png image
     plt.savefig(f'{hmmc_dir}/{taxon_id}/{taxon_id}_{alignment_method}_frp.png', format='png', dpi=300)
