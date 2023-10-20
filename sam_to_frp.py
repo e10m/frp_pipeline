@@ -12,7 +12,7 @@ def parse_sam(sam_file):
     This Python script accepts SAM files and parses it, returning a tuple containing two lists and a variable
 
     :param sam_file: Input SAM alignment file that includes headers and MD lines
-    :return: tuple ([pos_list], [percent_identities], taxon_id)
+    :return: tuple ([pos_list], [percent_identities], ref_genome)
     """
     # initialize variables / data structures
     pos_list = []
@@ -91,7 +91,7 @@ def generate_frp(data, file):
     print("The SAM data has been loaded in")
 
     # generate plot
-    plt.scatter(positions, percent_identities, color='blue', marker='o', s=1, alpha=0.5)
+    plt.scatter(positions, percent_identities, color='blue', marker=',', s=1, alpha=0.3)
     print("The fragment recruitment plot has been generated")
 
     # label plot
