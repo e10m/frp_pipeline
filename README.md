@@ -64,7 +64,7 @@ Files related to this project are stored on Google Cloud in the 'AS41073481-dmac
 
 ## Workflow Automation and Pipeline Building with Snakemake
 * Utilized Snakemake to streamline the alignment and FRP generation processes shown in the below Figure.
-* Wrote a bash script, 'main.sh', containing all 10 snakemake commands to automating the generation of the 20 FRPs
+* Wrote a bash script, 'main.sh', containing all 10 snakemake commands automating the generation of the 20 FRPs
 
 
 <div align="center">
