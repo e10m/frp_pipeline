@@ -12,7 +12,7 @@ The project consists of gathering metagenomic reads, aligning the reads to refer
 Files related to this project are stored on Google Cloud in the 'AS41073481-dmach1' project within the 'metagenomics' instance. The metagenomic sample used is the HMP mock community reads obtained using Roche 454 sequencing technology.
 
 ## Data Gathering
-* Downloaded FASTQ and FASTA reads for the Human Microbiome Project (HMP) mock community and transferred them to the Google Cloud Instance.
+* Downloaded FASTQ and FASTA files for 16s rRNA reads for the Human Microbiome Project (HMP) mock community and transferred them to the Google Cloud Instance.
 * Selected 10 bacterial reference genomes from the NCBI website to align reads against.
 
 
